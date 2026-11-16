@@ -93,9 +93,12 @@ a:hover { text-decoration-thickness: 2px; }
 
 /* ---------- 內文 ---------- */
 
+/* 內文欄寬固定（--measure），在側欄右邊的空間裡置中，寬螢幕時左右留白平均 */
 .page {
   padding: 3.2rem 3rem 5rem;
   max-width: calc(var(--measure) + 6rem);
+  width: 100%;
+  margin: 0 auto;
 }
 
 .page > * { max-width: var(--measure); }
