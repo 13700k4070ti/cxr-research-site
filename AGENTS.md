@@ -48,7 +48,7 @@ cxr-research-site/
 ├── methods/               ← 研究方法頁（type: method）
 ├── glossary/              ← 名詞解釋頁（type: glossary）
 ├── results/               ← 結果頁（目前只有待公開說明）
-├── templates/             ← 新頁面的模板，複製後填內容，不要直接當頁面用
+├── templates/             ← 新頁面的範本，複製後填內容，不要直接當頁面用
 │   ├── method.html
 │   └── glossary.html
 ├── assets/
@@ -104,13 +104,13 @@ cxr-research-site/
 ## 5. 新增一個頁面的步驟
 
 1. 確認主題屬於哪一類（method 或 glossary）；不屬於任何一類就先問我，不要自己開新類別
-2. 複製對應模板到正確資料夾，依第 6 節命名
+2. 複製對應範本到正確資料夾，依第 6 節命名
 3. 把 `<meta name="page-id">` 改成新頁面的 id（與檔名相同，不含副檔名）
 4. 填內容，所有必備區塊都要有
 5. 在 `pages.json` 加一筆，欄位見下方；同一類裡依 `order` 排序，新頁面放在合理的位置，必要時調整其他頁的 `order`
 6. 回頭檢查：其他頁面的「相關名詞」如果提到這個新名詞，補上連結；如果這個名詞在第 11 節的待新增清單裡，把它刪掉
 7. 跑 `python tools/check.py`，全部通過才算完成
-8. 本機預覽：`python -m http.server 8000`，開 `http://localhost:8000`（直接雙擊 HTML 檔案時側欄不會出現，因為瀏覽器不允許 `file://` 讀取 pages.json）
+8. 本機預覽：`python -m http.server 8000`，開 `http://localhost:8000`（直接點兩下開啟 HTML 檔案時側欄不會出現，因為瀏覽器不允許 `file://` 讀取 pages.json）
 
 `pages.json` 一筆的格式：
 
