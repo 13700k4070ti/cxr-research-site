@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="page-id" content="datasets">
+<title>資料集與切分｜CXR 跨資料集泛化研究筆記</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body data-root="../">
+<div class="layout">
+<nav class="sidebar" id="site-nav"></nav>
+<main class="page">
+
+<h1>資料集與切分</h1>
+<p class="lead">研究用了兩個公開的胸腔 X 光資料集：NIH ChestX-ray14 負責訓練、驗證和內部測試，CheXpert 只用來做外部測試。兩者來自不同醫院，這正是「跨資料集」要測的東西。</p>
+
+<section>
+<h2>兩個資料集</h2>
+<p><strong>NIH ChestX-ray14</strong>：共 112,120 張正面胸腔 X 光（1024×1024 PNG），14 類疾病標籤，標籤是用自然語言處理（NLP）從放射科報告自動抽出來的。</p>
+<p><strong>CheXpert</strong>：使用 CheXpert-v1.0-small（官方縮小版，JPEG，短邊 320），只取正面影像。分成兩個子集分別報告：valid 由放射科醫師共識標註；train 的標籤同樣由 NLP 抽取，而且有「不確定」標記。模型沒有在 CheXpert 上做任何訓練或微調。</p>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>集合</th><th>影像數</th><th>病人數</th><th>標註方式</th></tr></thead>
+<tbody>
+<tr><td>NIH train</td><td class="num">77,988</td><td class="num">25,207</td><td>NLP</td></tr>
+<tr><td>NIH val</td><td class="num">8,536</td><td class="num">2,801</td><td>NLP</td></tr>
+<tr><td>NIH test（官方）</td><td class="num">25,596</td><td class="num">2,797</td><td>NLP</td></tr>
+<tr><td>CheXpert valid（正面）</td><td class="num">202</td><td class="num">200</td><td>放射科醫師共識</td></tr>
+<tr><td>CheXpert train（正面）</td><td class="num">191,027</td><td class="num">64,534</td><td>NLP（含不確定標籤）</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<section>
+<h2>NIH 怎麼切</h2>
+<ul>
+<li>測試集直接用官方的 <code>test_list.txt</code>，不自己重切</li>
+<li>驗證集從官方 train/val 清單中，<strong>以病人為單位</strong>隨機抽出 10% 的病人（seed 42）</li>
+<li>三個集合之間沒有任何病人重疊，程式會自動檢查</li>
+</ul>
+</section>
+
+<section>
+<h2>兩邊共有的 7 類</h2>
+<p>兩個資料集的類別不完全一樣。外部測試只評估兩邊都有的 7 類：Atelectasis、Cardiomegaly、Effusion（對應 CheXpert 的 Pleural Effusion）、Pneumonia、Pneumothorax、Consolidation、Edema。模型仍然輸出 14 類，評估時只取出這 7 類的機率。</p>
+<p>CheXpert 的不確定標籤，主要分析直接排除（標為不確定的影像，在該類不計入）；另外做兩種敏感度分析：全部當陰性（U-Zeros）、全部當陽性（U-Ones）。</p>
+</section>
+
+<section class="why">
+<h2>為什麼這樣設計</h2>
+<p><strong>以病人為單位切分</strong>：同一位病人常常照很多張 X 光。如果同一個人的照片同時出現在訓練集和測試集，模型可能只是「認得這個人」，測試分數會偏高。依病人切，測試集裡的人模型一定沒看過。</p>
+<p><strong>用官方測試集</strong>：其他研究也用同一份 <code>test_list.txt</code>，結果比較能互相對照。</p>
+<p><strong>CheXpert 完全不拿來訓練</strong>：這樣才是在模擬「醫院直接拿別人訓練好的模型來用」的情境。</p>
+<p><strong>valid 和 train 分開報告</strong>：valid 標註品質高但只有 202 張；train 很大但標籤是 NLP 抽的，有雜訊。兩者各有缺點，所以都看。</p>
+</section>
+
+<section class="terms">
+<h2>相關名詞</h2>
+<ul>
+<li><a href="../glossary/domain-shift.html">資料集轉移</a></li>
+<li><a href="../glossary/auroc.html">AUROC</a></li>
+</ul>
+</section>
+
+<footer class="source">出處：小論文 2.1 節。資料集：Wang et al.（2017）；Irvin et al.（2019）</footer>
+
+</main>
+</div>
+</body>
+</html>

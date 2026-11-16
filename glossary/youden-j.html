@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="page-id" content="youden-j">
+<title>Youden's J｜CXR 跨資料集泛化研究筆記</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body data-root="../">
+<div class="layout">
+<nav class="sidebar" id="site-nav"></nav>
+<main class="page">
+
+<h1>Youden's J<span class="zh">約登指數</span></h1>
+<p class="definition">敏感度加特異度減 1，常用來在 ROC 曲線上挑一個平衡的閾值。</p>
+
+<h2>白話解釋</h2>
+<div class="formula">J = 敏感度 + 特異度 − 1</div>
+<p>模型輸出的是分數，臨床上要的是「有病／沒病」，中間需要一個閾值。閾值低，抓得到比較多病人（敏感度高），但誤報也多（特異度低）；閾值高則相反。</p>
+<p>Youden's J 把兩者加起來，挑 J 最大的那個閾值，等於找 ROC 曲線上離對角線最遠的點。假設某閾值下敏感度 0.80、特異度 0.70，J 就是 0.50。</p>
+
+<h2>在這個研究裡</h2>
+<p>每一類疾病在 NIH val 上挑 J 最大的閾值，再把這組閾值原封不動套到 CheXpert，算敏感度和特異度。CheXpert 的標籤完全不參與挑閾值，用來模擬「醫院拿到別人定好閾值的模型」的情況。</p>
+
+<h2>容易搞錯的地方</h2>
+<ul>
+<li>J 假設偽陽性和偽陰性一樣嚴重。臨床上漏診和誤報的代價通常不同，實際應用可能要另外調</li>
+<li>在 A 資料集挑的閾值，換到 B 資料集不一定還是最佳點</li>
+<li>不能在測試集上挑閾值，否則測試結果會太樂觀</li>
+</ul>
+
+<section class="terms">
+<h2>相關名詞</h2>
+<ul>
+<li><a href="auroc.html">AUROC</a></li>
+<li><a href="domain-shift.html">資料集轉移</a></li>
+</ul>
+</section>
+
+<footer class="source">出處：Youden（1950）</footer>
+
+</main>
+</div>
+</body>
+</html>

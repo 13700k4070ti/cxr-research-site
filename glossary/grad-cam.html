@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="page-id" content="grad-cam">
+<title>Grad-CAM｜CXR 跨資料集泛化研究筆記</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body data-root="../">
+<div class="layout">
+<nav class="sidebar" id="site-nav"></nav>
+<main class="page">
+
+<h1>Grad-CAM<span class="zh">梯度加權類別活化圖</span></h1>
+<p class="definition">用梯度找出影像中對某個類別判斷影響最大的區域，畫成熱圖。</p>
+
+<h2>白話解釋</h2>
+<p>深度學習模型常被說是黑盒子：它說這張有心臟肥大，但我們不知道它看的是心臟，還是影像角落的文字標記。</p>
+<p>Grad-CAM 的想法：模型最後一層卷積的特徵圖保留了位置資訊。計算目標類別的分數對這些特徵圖的梯度，梯度大的通道代表對這個判斷比較重要。把各通道依重要性加權相加，就得到一張粗略的熱圖，紅色區域是模型「在意」的地方。</p>
+
+<h2>在這個研究裡</h2>
+<p>只用在 CheXpert valid 的 Cardiomegaly，比較 B0、B0+AdaBN、ConvNeXt-T 22k 三個模型在看哪裡。熱圖解析度是最後一層特徵圖的 12×12。因為熱圖疊在 CheXpert 影像上，依資料使用協議不能公開，網站上不放。</p>
+
+<h2>容易搞錯的地方</h2>
+<ul>
+<li>熱圖只是「梯度大的區域」，不等於模型的推理過程，也不保證模型真的懂醫學</li>
+<li>解析度很粗（12×12），只能看大概的區域，不能看細節</li>
+<li>只看幾張挑出來的影像容易有挑選偏差，要量化才有說服力，例如和醫師標的病灶框比重疊程度</li>
+</ul>
+
+<section class="terms">
+<h2>相關名詞</h2>
+<ul>
+<li><a href="batchnorm.html">BatchNorm</a></li>
+<li><a href="adabn.html">AdaBN</a></li>
+</ul>
+</section>
+
+<footer class="source">出處：Selvaraju et al.（2017）</footer>
+
+</main>
+</div>
+</body>
+</html>

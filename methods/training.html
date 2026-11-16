@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="page-id" content="training">
+<title>訓練設定｜CXR 跨資料集泛化研究筆記</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body data-root="../">
+<div class="layout">
+<nav class="sidebar" id="site-nav"></nav>
+<main class="page">
+
+<h1>訓練設定</h1>
+<p class="lead">所有模型共用同一套訓練設定（研究裡稱為 D 設定），只有 learning rate 和 batch 依模型調整。這頁說明 D 設定是怎麼一步步選出來的，以及在一張 12GB 顯示卡上怎麼訓練 Transformer。</p>
+
+<section>
+<h2>D 設定怎麼選出來</h2>
+<p>先用 EfficientNet-B0 在 NIH val 上依序嘗試，每一步只改一件事，保留 val 表現較好的那個，最後把選出的設定套用到所有模型。</p>
+<div class="table-wrap">
+<table>
+<thead><tr><th>設定</th><th>相對前一步的改變</th></tr></thead>
+<tbody>
+<tr><td>baseline</td><td>256 輸入、lr 1e-4、weight decay 1e-4、dropout 0.2、旋轉 ±5°</td></tr>
+<tr><td>A</td><td>lr 改為 3e-5，加 warmup（沒有採用）</td></tr>
+<tr><td>B</td><td>回到 lr 1e-4；weight decay 1e-2、dropout 0.3</td></tr>
+<tr><td>C</td><td>B，再加旋轉 ±10°、亮度與對比 ±10%</td></tr>
+<tr><td>D</td><td>C，再把解析度從 256 提高到 384</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<section>
+<h2>D 設定的內容</h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th>項目</th><th>設定</th></tr></thead>
+<tbody>
+<tr><td>損失函數</td><td>二元交叉熵（BCEWithLogits），14 類各自獨立</td></tr>
+<tr><td>最佳化器</td><td>AdamW，weight decay 1e-2</td></tr>
+<tr><td>dropout</td><td>最後一層前 0.3</td></tr>
+<tr><td>學習率排程</td><td>cosine，最多 30 個 epoch</td></tr>
+<tr><td>提早停止</td><td>NIH val 平均 AUROC 連續 5 個 epoch 沒有進步就停</td></tr>
+<tr><td>有效 batch</td><td>固定 64</td></tr>
+<tr><td>精度</td><td>混合精度（AMP）</td></tr>
+<tr><td>seed</td><td>每個模型用 seed 42 與 seed 1 各訓練一次</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<section>
+<h2>各模型的 learning rate 與 batch</h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th>模型</th><th>learning rate</th><th>實際 batch × 梯度累積</th></tr></thead>
+<tbody>
+<tr><td>EfficientNet-B0</td><td>1e-4</td><td>64 × 1</td></tr>
+<tr><td>ResNet-50</td><td>3e-4</td><td>32 × 2</td></tr>
+<tr><td>ConvNeXt-T（1k、22k）</td><td>1e-4</td><td>16 × 4</td></tr>
+<tr><td>Swin-T（1k、22k）</td><td>1e-4</td><td>16 × 4</td></tr>
+</tbody>
+</table>
+</div>
+<p>ResNet-50 的 learning rate 是在 NIH val 上比較 3e-5、1e-4、3e-4 三組後選出的；其他模型只用 1e-4。硬體是 RTX 4070 Ti（12GB VRAM），大模型放不下 64 張一批，所以用梯度累積湊出相同的有效 batch。</p>
+</section>
+
+<section>
+<h2>研究過程的說明</h2>
+<p>研究並非全部事先規劃好。ResNet-50 是先用 1e-4 評估過 NIH test 之後，才回頭在 val 上比較 learning rate；ConvNeXt-T 與 Swin-T 的 1k 對照（構成 2×2）以及 AdaBN 等分析，是看過 CheXpert 的初步結果後才加入的。小論文裡有寫明這些順序。</p>
+</section>
+
+<section class="why">
+<h2>為什麼這樣設計</h2>
+<p><strong>只用驗證集做選擇</strong>：最佳權重、learning rate、設定都只看 NIH val。NIH test 和 CheXpert 不參與任何選擇，否則測試分數會被「挑過」，變得太樂觀。</p>
+<p><strong>所有模型共用一套設定</strong>：比較架構時，條件要一樣。代價是這套設定是用 B0 選的，對其他模型不一定最好，這點列在研究限制裡。</p>
+<p><strong>每個模型兩個 seed</strong>：同一個設定換 seed，結果也會有些微差異。兩個 seed 可以做集成，也可以看兩次的方向是否一致。</p>
+<p><strong>固定有效 batch</strong>：batch 大小會影響訓練結果。用梯度累積讓每個模型的有效 batch 都是 64，避免顯示卡大小變成干擾因素。</p>
+</section>
+
+<section class="terms">
+<h2>相關名詞</h2>
+<ul>
+<li><a href="../glossary/gradient-accumulation.html">梯度累積</a></li>
+<li><a href="../glossary/auroc.html">AUROC</a></li>
+</ul>
+</section>
+
+<footer class="source">出處：小論文 2.3、2.4 節。AdamW：Loshchilov &amp; Hutter（2019）</footer>
+
+</main>
+</div>
+</body>
+</html>

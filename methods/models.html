@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="page-id" content="models">
+<title>模型與 2×2 實驗設計｜CXR 跨資料集泛化研究筆記</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body data-root="../">
+<div class="layout">
+<nav class="sidebar" id="site-nav"></nav>
+<main class="page">
+
+<h1>模型與 2×2 實驗設計</h1>
+<p class="lead">研究一共比較 6 個模型。核心是 ConvNeXt-T 和 Swin-T 組成的 2×2 設計：把「架構」和「預訓練資料」這兩個因素拆開，另外兩個 CNN 當參考。</p>
+
+<section>
+<h2>6 個模型</h2>
+<p>全部用 timm 建立，以 ImageNet 預訓練權重初始化，最後一層換成 14 類輸出。</p>
+<div class="table-wrap">
+<table>
+<thead><tr><th>模型</th><th>timm 權重</th><th>參數量</th><th>正規化層</th></tr></thead>
+<tbody>
+<tr><td>EfficientNet-B0</td><td><code>efficientnet_b0.ra_in1k</code></td><td class="num">4.0M</td><td>BatchNorm</td></tr>
+<tr><td>ResNet-50</td><td><code>resnet50.a1_in1k</code></td><td class="num">23.5M</td><td>BatchNorm</td></tr>
+<tr><td>ConvNeXt-T 1k</td><td><code>convnext_tiny.fb_in1k</code></td><td class="num">27.8M</td><td>LayerNorm</td></tr>
+<tr><td>ConvNeXt-T 22k</td><td><code>convnext_tiny.fb_in22k_ft_in1k</code></td><td class="num">27.8M</td><td>LayerNorm</td></tr>
+<tr><td>Swin-T 1k</td><td><code>swin_tiny_patch4_window7_224.ms_in1k</code></td><td class="num">27.6M</td><td>LayerNorm</td></tr>
+<tr><td>Swin-T 22k</td><td><code>swin_tiny_patch4_window7_224.ms_in22k_ft_in1k</code></td><td class="num">27.6M</td><td>LayerNorm</td></tr>
+</tbody>
+</table>
+</div>
+<p>「22k」是先在 ImageNet-22k 預訓練，再用 ImageNet-1k 微調的權重。另外曾嘗試 ViT-S（DINOv2 預訓練），沒有納入主要分析。</p>
+</section>
+
+<section>
+<h2>2×2 設計</h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th></th><th>ImageNet-1k</th><th>ImageNet-22k → 1k</th></tr></thead>
+<tbody>
+<tr><td>CNN（ConvNeXt-T）</td><td>ConvNeXt-T 1k</td><td>ConvNeXt-T 22k</td></tr>
+<tr><td>Transformer（Swin-T）</td><td>Swin-T 1k</td><td>Swin-T 22k</td></tr>
+</tbody>
+</table>
+</div>
+<p>同一列比較，只差預訓練資料；同一欄比較，只差架構。EfficientNet-B0 和 ResNet-50 都只用 ImageNet-1k 權重，當作 CNN 的參考。</p>
+</section>
+
+<section>
+<h2>Swin-T 為了 384 輸入做的調整</h2>
+<p>Swin-T 原本設計在 224 解析度、window 7。改用 384 輸入後，window 改成 12，相對位置表由 timm 內插。ConvNeXt-T 和 Swin-T 都使用 stochastic depth 0.1。</p>
+</section>
+
+<section class="why">
+<h2>為什麼這樣設計</h2>
+<p><strong>為什麼選 ConvNeXt-T 對 Swin-T</strong>：ConvNeXt 是參考 Swin 的設計重新改造的 CNN，兩者參數量幾乎一樣（27.8M 對 27.6M），也都用 LayerNorm。拿它們比，差別比較集中在「卷積還是自注意力」，不會被模型大小或正規化層干擾。</p>
+<p><strong>為什麼要 1k 和 22k 兩種</strong>：Transformer 常被認為需要更多預訓練資料。如果只比一種權重，看到的差異可能是預訓練資料造成的，而不是架構本身。2×2 才能把兩個因素分開。</p>
+<p><strong>為什麼還要 B0 和 ResNet-50</strong>：它們是胸腔 X 光研究最常見的基準，而且用 BatchNorm，可以拿來檢查正規化層對跨資料集表現的影響（見<a href="robustness-design.html">穩健性分析設計</a>）。</p>
+<p><strong>只靠設定檔換模型</strong>：所有模型都用 timm 建立，換模型只改 <code>configs/</code> 的 yaml，訓練程式不動，避免不同模型用到不同版本的程式。</p>
+</section>
+
+<section class="terms">
+<h2>相關名詞</h2>
+<ul>
+<li><a href="../glossary/batchnorm.html">BatchNorm</a></li>
+<li><a href="../glossary/domain-shift.html">資料集轉移</a></li>
+</ul>
+</section>
+
+<footer class="source">出處：小論文 2.3 節。模型：Tan &amp; Le（2019）；He et al.（2016）；Liu et al.（2021, 2022）</footer>
+
+</main>
+</div>
+</body>
+</html>

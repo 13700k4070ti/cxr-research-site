@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="page-id" content="batchnorm">
+<title>BatchNorm｜CXR 跨資料集泛化研究筆記</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body data-root="../">
+<div class="layout">
+<nav class="sidebar" id="site-nav"></nav>
+<main class="page">
+
+<h1>BatchNorm<span class="zh">批次正規化（Batch Normalization）</span></h1>
+<p class="definition">把每一層的輸出依當批資料的平均和標準差正規化，讓訓練更穩定。</p>
+
+<h2>白話解釋</h2>
+<p>神經網路每一層的輸出數值範圍可能差很多，訓練時會不穩定。BatchNorm 在層與層之間加一個步驟：把這一批（batch）資料在每個通道的輸出減掉平均、除以標準差，再乘上可學習的縮放和位移。</p>
+<p>訓練時用的是當批資料的平均和變異數；同時它會用移動平均慢慢記下整個訓練集的統計量（running mean 和 running variance）。推論時，改用記下來的統計量。</p>
+<p>這代表：模型推論時，預設輸入資料的統計特性和訓練資料一樣。</p>
+
+<h2>在這個研究裡</h2>
+<p>EfficientNet-B0 和 ResNet-50 用 BatchNorm；ConvNeXt-T 和 Swin-T 用 LayerNorm，LayerNorm 只用單張影像自己的統計量，不需要記住訓練集的統計量。這個差別是 AdaBN 分析的出發點。</p>
+
+<h2>容易搞錯的地方</h2>
+<ul>
+<li>推論時用的是訓練集的 running 統計量，不是測試資料自己的，所以換資料集時可能不適用</li>
+<li>batch 太小時，訓練時估計的平均和變異數很不穩定。梯度累積只能湊出有效 batch，BatchNorm 看到的仍是每次的小 batch</li>
+<li>有 BatchNorm 的模型在推論前要切成 eval 模式，否則會用測試資料的統計量，結果不同</li>
+</ul>
+
+<section class="terms">
+<h2>相關名詞</h2>
+<ul>
+<li><a href="adabn.html">AdaBN</a></li>
+<li><a href="gradient-accumulation.html">梯度累積</a></li>
+<li><a href="domain-shift.html">資料集轉移</a></li>
+</ul>
+</section>
+
+<footer class="source">出處：Ioffe &amp; Szegedy（2015）</footer>
+
+</main>
+</div>
+</body>
+</html>

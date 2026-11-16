@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="page-id" content="preprocessing">
+<title>影像前處理與資料增強｜CXR 跨資料集泛化研究筆記</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body data-root="../">
+<div class="layout">
+<nav class="sidebar" id="site-nav"></nav>
+<main class="page">
+
+<h1>影像前處理與資料增強</h1>
+<p class="lead">影像在進模型前要統一大小和格式；訓練時再隨機做一些小變化，讓模型不要死記影像的細節。這頁說明兩者的做法，以及為什麼不做左右翻轉。</p>
+
+<section>
+<h2>前處理</h2>
+<ul>
+<li>所有影像轉成灰階，用 BOX（區域平均）縮放到 384×384，存成 uint8 陣列</li>
+<li>輸入模型時把灰階複製成 3 個通道，再用各模型預訓練時的 mean／std 正規化</li>
+<li>NIH 原圖是正方形，縮放不會變形；CheXpert-small 大多是寬 390、高 320。主要分析直接縮成正方形，另外做「先補黑邊成正方形再縮放」的版本當敏感度分析</li>
+</ul>
+</section>
+
+<section>
+<h2>資料增強（data augmentation）</h2>
+<p>只在訓練時使用，評估時不做任何增強。</p>
+<div class="table-wrap">
+<table>
+<thead><tr><th>增強</th><th>範圍</th></tr></thead>
+<tbody>
+<tr><td>旋轉</td><td>±10°</td></tr>
+<tr><td>平移</td><td>±5%</td></tr>
+<tr><td>縮放</td><td>0.95～1.05 倍</td></tr>
+<tr><td>亮度、對比</td><td>±10%</td></tr>
+<tr><td>左右翻轉</td><td>不做</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<section class="why">
+<h2>為什麼這樣設計</h2>
+<p><strong>不做左右翻轉</strong>：一般影像分類常用左右翻轉，但胸腔 X 光有固定的解剖方向，心臟在左邊。翻轉之後變成右位心，對 Cardiomegaly（心臟肥大）這類跟心臟位置有關的判斷，等於在教模型錯的東西。</p>
+<p><strong>增強幅度小</strong>：真實的 X 光拍攝角度、曝光都只會有小幅差異，增強只模擬這個範圍，避免產生臨床上不會出現的影像。</p>
+<p><strong>補邊版本</strong>：CheXpert 的影像不是正方形，直接縮放會把胸腔壓扁，可能影響心臟大小的判斷。補邊版本用來檢查這個變形會不會影響外部測試。</p>
+<p><strong>存成單一 uint8 陣列</strong>：十幾萬張 PNG 每個 epoch 重新讀檔、解碼太慢。先處理好存成一個陣列，訓練時直接讀記憶體。</p>
+</section>
+
+<section class="terms">
+<h2>相關名詞</h2>
+<ul>
+<li><a href="../glossary/domain-shift.html">資料集轉移</a></li>
+</ul>
+</section>
+
+<footer class="source">出處：小論文 2.2 節</footer>
+
+</main>
+</div>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="page-id" content="evaluation">
+<title>評估指標與統計方法｜CXR 跨資料集泛化研究筆記</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body data-root="../">
+<div class="layout">
+<nav class="sidebar" id="site-nav"></nav>
+<main class="page">
+
+<h1>評估指標與統計方法</h1>
+<p class="lead">比較兩個模型時，光看分數高低不夠，還要知道差距是不是可能只是運氣。這頁說明研究用什麼指標、怎麼定義「泛化落差」，以及用哪些統計方法判斷差異。</p>
+
+<section>
+<h2>指標</h2>
+<ul>
+<li>主要指標是各類 AUROC 的平均：NIH test 報告 14 類平均；CheXpert 和泛化落差報告 7 個共同類別的平均</li>
+<li>主要分析用 seed 集成：把兩個 seed 的預測機率取平均。兩組同 seed 的配對比較另外列出</li>
+<li><strong>泛化落差</strong> = NIH test（同 7 類）的 AUROC − CheXpert 的 AUROC</li>
+</ul>
+<p>閾值：每一類用 NIH val 上 Youden's J 最大的點，直接套用到 CheXpert 計算敏感度和特異度。CheXpert 的標籤不參與挑選閾值。</p>
+</section>
+
+<section>
+<h2>統計方法</h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th>用途</th><th>方法</th></tr></thead>
+<tbody>
+<tr><td>信賴區間</td><td>病人層級 bootstrap，重抽 1,000 次，取 2.5% 與 97.5% 百分位數；兩個模型的比較共用同一組抽樣</td></tr>
+<tr><td>兩模型 AUROC 的檢定</td><td>成對 DeLong 檢定，同一病人的多張影像合併處理（病人校正）</td></tr>
+<tr><td>逐類比較</td><td>Holm 法校正多重比較</td></tr>
+<tr><td>泛化落差的比較</td><td>NIH 和 CheXpert 是不同病人，兩邊各自 bootstrap 後相減，得到差值的分布</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<section>
+<h2>邊緣結果的處理</h2>
+<p>bootstrap 和 DeLong 是兩種不同方法，偶爾結論會不一致：例如 bootstrap 95% CI 包含 0（看起來沒差），但 DeLong 的 p 值小於 0.05（看起來有差）。這種情況一律標為「邊緣結果」，不說成確定有差，也不說成確定沒差。</p>
+<p>另外，CheXpert train 有十九萬張影像，樣本這麼大，很小的差距也會變得顯著。所以判讀時以效果大小和 valid 的方向是否一致為主，p 值為輔。</p>
+</section>
+
+<section class="why">
+<h2>為什麼這樣設計</h2>
+<p><strong>用 AUROC 而不是準確率</strong>：很多疾病的陽性比例很低，模型全部猜陰性準確率也很高。AUROC 不受閾值影響，比較能反映模型排序病例的能力。</p>
+<p><strong>病人層級重抽</strong>：同一位病人的多張影像彼此相關，如果把每張影像當成獨立樣本，信賴區間會太窄。以病人為單位重抽，才符合資料真正的結構。</p>
+<p><strong>兩種方法交叉確認</strong>：bootstrap 和 DeLong 的假設不同，兩者結論一致時比較可信；不一致時誠實標出來，比只挑對自己有利的那個好。</p>
+<p><strong>閾值只在 NIH val 挑</strong>：這是模擬真實情境，醫院拿到模型時，閾值已經由原開發者決定好了。</p>
+</section>
+
+<section class="terms">
+<h2>相關名詞</h2>
+<ul>
+<li><a href="../glossary/auroc.html">AUROC</a></li>
+<li><a href="../glossary/bootstrap.html">bootstrap</a></li>
+<li><a href="../glossary/delong-test.html">DeLong 檢定</a></li>
+<li><a href="../glossary/youden-j.html">Youden's J</a></li>
+</ul>
+</section>
+
+<footer class="source">出處：小論文 2.5、2.6 節。DeLong et al.（1988）；Holm（1979）；Youden（1950）</footer>
+
+</main>
+</div>
+</body>
+</html>

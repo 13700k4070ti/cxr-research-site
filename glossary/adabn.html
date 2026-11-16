@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="page-id" content="adabn">
+<title>AdaBN｜CXR 跨資料集泛化研究筆記</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body data-root="../">
+<div class="layout">
+<nav class="sidebar" id="site-nav"></nav>
+<main class="page">
+
+<h1>AdaBN<span class="zh">自適應批次正規化（Adaptive Batch Normalization）</span></h1>
+<p class="definition">權重不動，只用目標資料重新估計 BatchNorm 的統計量，讓模型適應新資料。</p>
+
+<h2>白話解釋</h2>
+<p>BatchNorm 會記住訓練資料的平均和變異數。如果新醫院的影像整體比較亮、對比不同，記住的統計量就對不上，後面每一層收到的數值都偏掉。</p>
+<p>AdaBN 的做法很簡單：拿一批新資料的影像（不需要標籤）跑過模型，重新計算每個 BatchNorm 層的 running mean 和 variance，其他權重完全不動。等於只幫模型「重新校正量尺」。</p>
+
+<h2>在這個研究裡</h2>
+<p>只對使用 BatchNorm 的 B0 和 ResNet-50 做。從 CheXpert train 依病人抽 3,347 位病人、10,004 張影像當調整集，只用影像。評估時排除這些病人。目的是檢查跨資料集的落差有多少和 BatchNorm 統計量有關，不是要當成正式的改善方法。</p>
+
+<h2>容易搞錯的地方</h2>
+<ul>
+<li>AdaBN 用到了目標資料的影像，屬於測試時調整。拿它的結果和沒做調整的模型比排名，並不公平</li>
+<li>只對有 BatchNorm 的模型有意義，LayerNorm 模型沒有可重新估計的統計量</li>
+<li>用來調整的影像不能再拿來評估，否則等於偷看答案</li>
+</ul>
+
+<section class="terms">
+<h2>相關名詞</h2>
+<ul>
+<li><a href="batchnorm.html">BatchNorm</a></li>
+<li><a href="domain-shift.html">資料集轉移</a></li>
+</ul>
+</section>
+
+<footer class="source">出處：Li et al.（2018）</footer>
+
+</main>
+</div>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="page-id" content="robustness-design">
+<title>穩健性分析設計｜CXR 跨資料集泛化研究筆記</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body data-root="../">
+<div class="layout">
+<nav class="sidebar" id="site-nav"></nav>
+<main class="page">
+
+<h1>穩健性分析設計</h1>
+<p class="lead">如果模型換到 CheXpert 表現變差，原因可能有很多：影像長寬比不同、畫質不同、模型內部的統計量不適用，或是醫院本身的差異。這頁說明四個分析各自想排除哪一種原因。這些分析都只做推論，不重新訓練。</p>
+
+<section>
+<h2>四個分析</h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th>分析</th><th>想回答的問題</th><th>做法</th></tr></thead>
+<tbody>
+<tr><td>長寬比</td><td>把非正方形影像壓扁，會不會影響判斷？</td><td>CheXpert 改成先補黑邊成正方形再縮放，和直接縮放的結果做成對比較</td></tr>
+<tr><td>影像品質</td><td>CheXpert-small 解析度較低又經過 JPEG 壓縮，落差有多少來自畫質？</td><td>把 NIH test 降成類似 CheXpert-small 的品質：LANCZOS 縮到短邊 320，JPEG quality 95 壓縮，再放大回 384。另做只縮放、不壓縮的版本，分開解析度和壓縮的影響</td></tr>
+<tr><td>AdaBN</td><td>BatchNorm 記住的是 NIH 的統計量，換成 CheXpert 的統計量會怎樣？</td><td>從 CheXpert train 依病人隨機抽 3,347 位病人、10,004 張影像，只用影像不用標籤，重新估計 BatchNorm 的 running mean 與 variance，其他權重不變。只適用 B0 和 ResNet-50</td></tr>
+<tr><td>Grad-CAM</td><td>模型判斷 Cardiomegaly 時在看哪裡？</td><td>只做 CheXpert valid 的 Cardiomegaly，比較 B0、B0+AdaBN、ConvNeXt-T 22k 的熱圖</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<section>
+<h2>AdaBN 的細節</h2>
+<ul>
+<li>統計量估計一次後存檔，之後所有分析都載入同一份檔案</li>
+<li>重新啟動程式後再推論一次，結果和存檔的預測逐位元相同</li>
+<li>評估 CheXpert train 時，排除用來調整的那些病人，避免同一批影像既拿來調整又拿來評估</li>
+<li>AdaBN 用到了目標資料的影像，屬於測試時調整，只用來檢驗機制，不和其他模型的零樣本結果比排名</li>
+</ul>
+</section>
+
+<section>
+<h2>Grad-CAM 挑哪些影像</h2>
+<p>熱圖是對 Cardiomegaly 的 logit 求最後一層特徵圖（12×12）的梯度，兩個 seed 各自正規化後取平均。觀察兩組影像：一組是三個模型都判斷為陽性的真陽性，從符合條件的影像中隨機抽 5 張；另一組是三個模型百分位排名差距最大的 5 張。</p>
+<p>依「排名差距最大」挑出來的影像，本身就偏向某個模型出錯的病例，有挑選偏差，所以 Grad-CAM 只當質性觀察。熱圖疊在 CheXpert 影像上，依資料使用協議不能公開，網站上不會放。</p>
+</section>
+
+<section class="why">
+<h2>為什麼這樣設計</h2>
+<p><strong>一次只改一個因素</strong>：每個分析只動一件事（長寬比、畫質、BN 統計量），其餘不變，這樣看到的變化才能歸因到那個因素。</p>
+<p><strong>反過來把 NIH 降質</strong>：沒辦法把 CheXpert 變回高畫質，但可以把 NIH 變差。比較 NIH 降質前後的分數變化，就能估計畫質大概能解釋多少落差。</p>
+<p><strong>誠實標示探索性</strong>：這些分析是看過 CheXpert 初步結果才加的，不是事先設定的假設，所以只用來推論可能原因，不當成確定的結論。</p>
+</section>
+
+<section class="terms">
+<h2>相關名詞</h2>
+<ul>
+<li><a href="../glossary/adabn.html">AdaBN</a></li>
+<li><a href="../glossary/batchnorm.html">BatchNorm</a></li>
+<li><a href="../glossary/grad-cam.html">Grad-CAM</a></li>
+<li><a href="../glossary/domain-shift.html">資料集轉移</a></li>
+</ul>
+</section>
+
+<footer class="source">出處：小論文 2.7 節。Li et al.（2018）；Selvaraju et al.（2017）</footer>
+
+</main>
+</div>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="page-id" content="auroc">
+<title>AUROC｜CXR 跨資料集泛化研究筆記</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body data-root="../">
+<div class="layout">
+<nav class="sidebar" id="site-nav"></nav>
+<main class="page">
+
+<h1>AUROC<span class="zh">ROC 曲線下面積</span></h1>
+<p class="definition">隨機抽一個陽性和一個陰性病例，模型給陽性較高分數的機率。</p>
+
+<h2>白話解釋</h2>
+<p>模型對每張 X 光輸出一個 0 到 1 的分數，代表「有這個病」的可能性。要判斷有沒有病，得選一個閾值，超過就算陽性。閾值一改，敏感度和特異度就跟著變，所以單看某個閾值下的表現不太公平。</p>
+<p>ROC 曲線把所有可能的閾值都畫出來：橫軸是偽陽性率（1 − 特異度），縱軸是敏感度。曲線越往左上角靠，模型越好。AUROC 就是這條曲線下的面積，介於 0 到 1。</p>
+<p>更直覺的理解：假設隨機抽一張有病、一張沒病的影像，AUROC 0.80 代表模型有 80% 的機率給有病那張比較高的分數。0.5 等於亂猜，1 是完美排序。</p>
+
+<h2>在這個研究裡</h2>
+<p>這是研究的主要指標。每一類疾病各算一個 AUROC，再取平均：NIH test 平均 14 類，CheXpert 平均 7 個共同類別。泛化落差也是用 AUROC 相減來定義。</p>
+
+<h2>容易搞錯的地方</h2>
+<ul>
+<li>AUROC 高不代表在某個閾值下好用。它衡量的是「排序」能力，實際使用時還要另外挑閾值，見 Youden's J</li>
+<li>AUROC 不受陽性比例影響，這是優點，但也表示它看不出「陽性很少時，偽陽性會多到不能用」的問題</li>
+<li>兩個 AUROC 的差距大小，要搭配信賴區間或檢定才知道是不是運氣</li>
+</ul>
+
+<section class="terms">
+<h2>相關名詞</h2>
+<ul>
+<li><a href="youden-j.html">Youden's J</a></li>
+<li><a href="delong-test.html">DeLong 檢定</a></li>
+<li><a href="bootstrap.html">bootstrap</a></li>
+</ul>
+</section>
+
+<footer class="source">出處：Hanley &amp; McNeil（1982）</footer>
+
+</main>
+</div>
+</body>
+</html>

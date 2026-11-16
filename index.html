@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="page-id" content="home">
+<meta name="description" content="胸腔 X 光模型換一家醫院還準嗎？NIH ChestX-ray14 → CheXpert 跨資料集泛化研究的方法與名詞筆記。">
+<title>CXR 跨資料集泛化研究筆記</title>
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/site.js" defer></script>
+</head>
+<body data-root="./">
+<div class="layout">
+<nav class="sidebar" id="site-nav"></nav>
+<main class="page">
+
+<h1 class="home-title"><span>胸腔 X 光模型</span><span>換一家醫院，</span><span>還準嗎？</span></h1>
+<p class="lead">這是我在大一上學期做的研究筆記。我用 NIH ChestX-ray14 訓練 6 個胸腔 X 光分類模型，完全不調整，直接拿到另一家醫院的資料集 CheXpert 測試，比較 CNN 和 Transformer 換了資料來源之後表現會差多少，以及落差可能從哪裡來。</p>
+
+<figure class="film-panel">
+<div class="scroll">
+<svg viewBox="0 0 780 300" role="img" aria-labelledby="flow-title flow-desc">
+  <title id="flow-title">研究流程</title>
+  <desc id="flow-desc">在 NIH ChestX-ray14 上訓練、驗證與內部測試 6 個模型，接著不經任何調整，直接在 CheXpert 上做外部測試。CheXpert 這一步用黃色蠟筆圈起來，標註：換一家醫院，還準嗎？</desc>
+  <g font-family="Noto Sans TC, PingFang TC, Microsoft JhengHei, sans-serif" fill="#D8E2EA">
+    <!-- NIH -->
+    <rect x="6" y="80" width="214" height="124" fill="none" stroke="#6F8494" stroke-width="1.5"/>
+    <text x="113" y="124" text-anchor="middle" font-size="21" font-weight="700">NIH</text>
+    <text x="113" y="150" text-anchor="middle" font-size="16" fill="#93A3B1">ChestX-ray14</text>
+    <text x="113" y="180" text-anchor="middle" font-size="16" fill="#93A3B1">訓練與內部測試</text>
+    <!-- arrow 1 -->
+    <line x1="224" y1="142" x2="268" y2="142" stroke="#6F8494" stroke-width="2"/>
+    <path d="M268 135 L280 142 L268 149 Z" fill="#6F8494"/>
+    <!-- models -->
+    <rect x="284" y="80" width="214" height="124" fill="none" stroke="#6F8494" stroke-width="1.5"/>
+    <text x="391" y="124" text-anchor="middle" font-size="21" font-weight="700">6 個模型</text>
+    <text x="391" y="150" text-anchor="middle" font-size="16" fill="#93A3B1">4 個 CNN</text>
+    <text x="391" y="180" text-anchor="middle" font-size="16" fill="#93A3B1">2 個 Transformer</text>
+    <!-- arrow 2 -->
+    <line x1="502" y1="142" x2="546" y2="142" stroke="#6F8494" stroke-width="2" stroke-dasharray="6 5"/>
+    <path d="M546 135 L558 142 L546 149 Z" fill="#6F8494"/>
+    <text x="528" y="226" text-anchor="middle" font-size="14" fill="#93A3B1">不調整</text>
+    <line x1="528" y1="150" x2="528" y2="210" stroke="#6F8494" stroke-width="1" stroke-dasharray="2 3"/>
+    <!-- CheXpert -->
+    <rect x="562" y="80" width="200" height="124" fill="none" stroke="#6F8494" stroke-width="1.5"/>
+    <text x="662" y="124" text-anchor="middle" font-size="21" font-weight="700">CheXpert</text>
+    <text x="662" y="150" text-anchor="middle" font-size="16" fill="#93A3B1">另一家醫院</text>
+    <text x="662" y="180" text-anchor="middle" font-size="16" fill="#93A3B1">外部測試</text>
+    <!-- grease pencil ring -->
+    <path class="pencil-ring" d="M572 70 C614 40, 724 42, 760 64 C786 84, 788 196, 758 216 C718 244, 606 242, 572 222 C540 200, 540 96, 580 66" fill="none" stroke="#E2B33C" stroke-width="4.5" stroke-linecap="round"/>
+    <text x="662" y="276" text-anchor="middle" font-size="20" font-weight="700" fill="#E2B33C">換一家醫院，還準嗎？</text>
+  </g>
+</svg>
+</div>
+<ol class="flow-mobile" aria-hidden="true">
+<li><strong>NIH ChestX-ray14</strong>訓練與內部測試</li>
+<li><strong>6 個模型</strong>4 個 CNN、2 個 Transformer</li>
+<li class="flow-target"><strong>CheXpert</strong>另一家醫院，不調整直接外部測試<em>換一家醫院，還準嗎？</em></li>
+</ol>
+<figcaption>研究流程。CNN：EfficientNet-B0、ResNet-50、ConvNeXt-T（1k、22k）；Transformer：Swin-T（1k、22k）。每個模型 2 個 seed，在 CheXpert 上沒有任何訓練或微調。</figcaption>
+</figure>
+
+<h2>為什麼要做這個</h2>
+<p>NIH ChestX-ray14 和 CheXpert 都只來自單一家美國醫院。模型在原本那家醫院的測試分數很好，不代表換到別的醫院、別的 X 光機、別的病人族群也一樣好。醫院要導入別人訓練好的模型時，真正關心的是後者。</p>
+<p>這個研究想回答三個問題：</p>
+<ol>
+<li>內部測試的分數排名，能不能代表換資料集之後的排名？</li>
+<li>CNN 和 Transformer，哪一種架構換資料集時比較穩定？預訓練資料（ImageNet-1k 或 22k）的影響有多大？</li>
+<li>換資料集後的落差，有多少來自影像品質、多少來自模型內部的統計量，還剩多少說不清楚？</li>
+</ol>
+
+<h2>研究方法</h2>
+<p>從資料怎麼切、模型怎麼選，到統計怎麼比較，依研究流程排列。</p>
+<ul class="page-list" data-list="method"></ul>
+
+<h2>名詞解釋</h2>
+<p>研究裡用到的統計和深度學習名詞，用白話整理。</p>
+<ul class="page-list" data-list="glossary"></ul>
+
+<h2>研究結果</h2>
+<p>結果目前還沒有公開，<a href="results/index.html">說明在這裡</a>。</p>
+
+<footer class="source">作者：鍾宇宸（中國醫藥大學醫療資訊學系一年級）。研究程式碼主要由 Claude Code 協助撰寫，研究設計、實驗規則與結果判讀由作者決定並檢查。</footer>
+
+</main>
+</div>
+</body>
+</html>

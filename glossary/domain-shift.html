@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="page-id" content="domain-shift">
+<title>資料集轉移｜CXR 跨資料集泛化研究筆記</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body data-root="../">
+<div class="layout">
+<nav class="sidebar" id="site-nav"></nav>
+<main class="page">
+
+<h1>資料集轉移<span class="zh">domain shift／dataset shift</span></h1>
+<p class="definition">測試資料和訓練資料來自不同分布，使模型在新資料上的表現改變。</p>
+
+<h2>白話解釋</h2>
+<p>機器學習有個隱含假設：訓練資料和之後實際遇到的資料長得差不多。換一家醫院時，這個假設很容易被打破：</p>
+<ul>
+<li><strong>影像本身不同</strong>：X 光機廠牌、曝光參數、解析度、壓縮方式、擺位習慣</li>
+<li><strong>病人組成不同</strong>：年齡、疾病比例、門診或住院病人</li>
+<li><strong>標註方式不同</strong>：醫師判讀或 NLP 抽取、類別定義寬鬆或嚴格</li>
+</ul>
+<p>任何一種不同，都可能讓模型在新醫院表現變差。更麻煩的是，模型可能學到的是「這家醫院的特徵」而不是疾病本身，例如影像角落的標記文字。</p>
+
+<h2>在這個研究裡</h2>
+<p>整個研究就是在量資料集轉移的影響：用 NIH 訓練，到 CheXpert 測試，比較不同架構受影響的程度，再用長寬比、影像品質、AdaBN 三個分析，試著拆出落差可能的來源。</p>
+
+<h2>容易搞錯的地方</h2>
+<ul>
+<li>內部測試分數高，不代表換資料集也高；排名也可能改變</li>
+<li>外部測試的落差通常同時混了影像、病人、標註三種差異，很難完全分開</li>
+<li>資料集轉移不只發生在換醫院，同一家醫院換了機器或改了流程也會發生</li>
+</ul>
+
+<section class="terms">
+<h2>相關名詞</h2>
+<ul>
+<li><a href="adabn.html">AdaBN</a></li>
+<li><a href="batchnorm.html">BatchNorm</a></li>
+<li><a href="auroc.html">AUROC</a></li>
+</ul>
+</section>
+
+<footer class="source">出處：Quiñonero-Candela et al.（2009）；Zech et al.（2018）</footer>
+
+</main>
+</div>
+</body>
+</html>
