@@ -1,6 +1,6 @@
 # CXR 跨資料集泛化研究筆記
 
-胸腔 X 光模型換一家醫院還準嗎？這個網站整理我的研究「CNN 與 Transformer 的跨資料集泛化：NIH ChestX-ray14 → CheXpert」的研究動機、方法、實驗設計與名詞解釋。
+胸腔 X 光模型換一個資料集還準嗎？這個網站整理我的研究「CNN 與 Transformer 的跨資料集泛化：NIH ChestX-ray14 → CheXpert」的研究動機、方法、實驗設計與名詞解釋。
 
 網站：https://13700k4070ti.github.io/cxr-research-site/
 

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="page-id" content="home">
-<meta name="description" content="胸腔 X 光模型換一家醫院還準嗎？NIH ChestX-ray14 → CheXpert 跨資料集泛化研究的方法與名詞筆記。">
+<meta name="description" content="胸腔 X 光模型換一個資料集還準嗎？NIH ChestX-ray14 → CheXpert 跨資料集泛化研究的方法與名詞筆記。">
 <title>CXR 跨資料集泛化研究筆記</title>
 <link rel="stylesheet" href="assets/style.css">
 <script src="assets/site.js" defer></script>
@@ -14,14 +14,14 @@
 <nav class="sidebar" id="site-nav"></nav>
 <main class="page">
 
-<h1 class="home-title"><span>胸腔 X 光模型</span><span>換一家醫院，</span><span>還準嗎？</span></h1>
-<p class="lead">這是我在大一上學期做的研究筆記。我用 NIH ChestX-ray14 訓練 6 個胸腔 X 光分類模型，完全不調整，直接拿到另一家醫院的資料集 CheXpert 測試，比較 CNN 和 Transformer 換了資料來源之後表現會差多少，以及落差可能從哪裡來。</p>
+<h1 class="home-title"><span>胸腔 X 光模型</span><span>換一個資料集，</span><span>還準嗎？</span></h1>
+<p class="lead">這是我在大一上學期做的研究筆記。我用 NIH ChestX-ray14 訓練 6 個胸腔 X 光分類模型，完全不調整，直接拿到另一個資料集 CheXpert 測試，比較 CNN 和 Transformer 換了資料來源之後表現會差多少，以及落差可能從哪裡來。</p>
 
 <figure class="film-panel">
 <div class="scroll">
 <svg viewBox="0 0 780 300" role="img" aria-labelledby="flow-title flow-desc">
   <title id="flow-title">研究流程</title>
-  <desc id="flow-desc">在 NIH ChestX-ray14 上訓練、驗證與內部測試 6 個模型，接著不經任何調整，直接在 CheXpert 上做外部測試。CheXpert 這一步用黃色蠟筆圈起來，標註：換一家醫院，還準嗎？</desc>
+  <desc id="flow-desc">在 NIH ChestX-ray14 上訓練、驗證與內部測試 6 個模型，接著不經任何調整，直接在 CheXpert 上做外部測試。CheXpert 這一步用黃色蠟筆圈起來，標註：換一個資料集，還準嗎？</desc>
   <g font-family="Noto Sans TC, PingFang TC, Microsoft JhengHei, sans-serif" fill="#D8E2EA">
     <!-- NIH -->
     <rect x="6" y="80" width="214" height="124" fill="none" stroke="#6F8494" stroke-width="1.5"/>
@@ -44,18 +44,18 @@
     <!-- CheXpert -->
     <rect x="562" y="80" width="200" height="124" fill="none" stroke="#6F8494" stroke-width="1.5"/>
     <text x="662" y="124" text-anchor="middle" font-size="21" font-weight="700">CheXpert</text>
-    <text x="662" y="150" text-anchor="middle" font-size="16" fill="#93A3B1">另一家醫院</text>
+    <text x="662" y="150" text-anchor="middle" font-size="16" fill="#93A3B1">另一個資料集</text>
     <text x="662" y="180" text-anchor="middle" font-size="16" fill="#93A3B1">外部測試</text>
     <!-- grease pencil ring -->
     <path class="pencil-ring" d="M572 70 C614 40, 724 42, 760 64 C786 84, 788 196, 758 216 C718 244, 606 242, 572 222 C540 200, 540 96, 580 66" fill="none" stroke="#E2B33C" stroke-width="4.5" stroke-linecap="round"/>
-    <text x="662" y="276" text-anchor="middle" font-size="20" font-weight="700" fill="#E2B33C">換一家醫院，還準嗎？</text>
+    <text x="662" y="276" text-anchor="middle" font-size="20" font-weight="700" fill="#E2B33C">換一個資料集，還準嗎？</text>
   </g>
 </svg>
 </div>
 <ol class="flow-mobile" aria-hidden="true">
 <li><strong>NIH ChestX-ray14</strong>訓練與內部測試</li>
 <li><strong>6 個模型</strong>4 個 CNN、2 個 Transformer</li>
-<li class="flow-target"><strong>CheXpert</strong>另一家醫院，不調整直接外部測試<em>換一家醫院，還準嗎？</em></li>
+<li class="flow-target"><strong>CheXpert</strong>另一個資料集，不調整直接外部測試<em>換一個資料集，還準嗎？</em></li>
 </ol>
 <figcaption>研究流程。CNN：EfficientNet-B0、ResNet-50、ConvNeXt-T（1k、22k）；Transformer：Swin-T（1k、22k）。每個模型 2 個 seed，在 CheXpert 上沒有任何訓練或微調。</figcaption>
 </figure>
