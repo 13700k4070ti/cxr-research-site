@@ -167,7 +167,7 @@ cxr-research-site/
 
 台灣上課、寫報告、跟同學討論時，這些名詞大多直接講英文，中文譯名反而少人用、讀起來卡。所以**專有名詞一律寫英文**，不要自己翻成中文，也不要在括號裡補中文譯名。
 
-- 指標與統計：AUROC、ROC、bootstrap、DeLong、p 值、Youden's J、Holm、95% CI
+- 指標與統計：AUROC、ROC、bootstrap、DeLong、p 值、Youden's J、Holm、Bonferroni、family-wise error rate、95% CI
 - 訓練相關：batch、epoch、seed、learning rate、learning rate scheduler、optimizer、loss function、binary cross-entropy、dropout、weight decay、early stopping、warmup、gradient accumulation、AMP（mixed precision）、data augmentation、VRAM、GPU
 - 模型與層：CNN、Transformer、BatchNorm、LayerNorm、AdaBN、Grad-CAM、feature map、stochastic depth、EfficientNet-B0、ResNet-50、ConvNeXt-T、Swin-T、ViT、DINOv2、timm
 - 資料與概念：domain shift、NLP、NIH ChestX-ray14、CheXpert、ImageNet-1k、ImageNet-22k
@@ -242,7 +242,6 @@ cxr-research-site/
 
 名詞頁：
 
-- `holm-correction`：Holm 多重比較校正
 - `stochastic-depth`：stochastic depth
 - `mixed-precision`：AMP（mixed precision）
 - `layernorm`：LayerNorm（和 BatchNorm 對照）

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="page-id" content="holm-correction">
+<title>Holm 校正｜CXR 跨資料集泛化研究筆記</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body data-root="../">
+<div class="layout">
+<nav class="sidebar" id="site-nav"></nav>
+<main class="page">
+
+<h1>Holm 校正<span class="zh">一次做很多個檢定時，控制整體誤判的機率</span></h1>
+<p class="definition">把多個 p 值由小到大排序，門檻逐步放寬，控制至少誤判一個的機率。</p>
+
+<h2>白話解釋</h2>
+<p>單一個檢定用 0.05 當門檻，意思是：就算兩個模型其實一樣，也有 5% 的機會剛好判成「有差」。如果一次做很多個檢定，每個都有 5% 的機會誤判，全部加起來，至少誤判一個的機率會遠高於 5%。檢定做得越多，越容易「總有幾個剛好顯著」。</p>
+<p>最簡單的修正是 Bonferroni：做 m 個檢定，就把門檻改成 0.05/m。這樣很安全，但太嚴格，真的有差的也容易被判成不顯著。</p>
+<p>Holm 是 Bonferroni 的改良版，做法像闖關：</p>
+<ol>
+<li>把 m 個 p 值由小到大排好</li>
+<li>最小的 p 值跟 0.05/m 比，第二小的跟 0.05/(m−1) 比，第三小的跟 0.05/(m−2) 比，依此類推，門檻一關比一關寬</li>
+<li>只要有一關沒過，這一關和後面所有的檢定都判為不顯著，不再往下比</li>
+</ol>
+<p>等價的寫法是把 p 值乘上倍數再跟 0.05 比：第 i 小的 p 值乘上 (m − i + 1)，而且校正後的值不能比前一個小（取到目前為止的最大值）。</p>
+<p>舉例（假設的數字，不是研究結果）：做 3 個檢定，p 值排序後是 0.01、0.02、0.04。</p>
+<div class="table-wrap">
+<table>
+<thead><tr><th>排序</th><th>原始 p 值</th><th>Holm：乘上的倍數</th><th>Holm 校正後</th><th>Bonferroni 校正後（全部乘 3）</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>0.01</td><td>× 3</td><td>0.03，顯著</td><td>0.03，顯著</td></tr>
+<tr><td>2</td><td>0.02</td><td>× 2</td><td>0.04，顯著</td><td>0.06，不顯著</td></tr>
+<tr><td>3</td><td>0.04</td><td>× 1</td><td>0.04，顯著</td><td>0.12，不顯著</td></tr>
+</tbody>
+</table>
+</div>
+<p>同樣控制住整體誤判機率，Holm 在這個假設的例子裡判出 3 個顯著，Bonferroni 只判出 1 個。Holm 的結論一定不會比 Bonferroni 少，所以通常沒有理由選 Bonferroni。</p>
+
+<h2>在這個研究裡</h2>
+<p>比較兩個模型時，除了看平均 AUROC，也會逐類比較每一種疾病的 AUROC。每一類各做一次成對 DeLong 檢定，一次比較就會得到好幾個 p 值。這些逐類的 p 值先用 Holm 法校正，再判斷是否顯著，避免類別一多就「總有幾類剛好顯著」。</p>
+<p>Holm 校正只用在逐類比較。模型之間的平均 AUROC 比較沒有做多重比較校正。</p>
+
+<h2>容易搞錯的地方</h2>
+<ul>
+<li>Holm 控制的是 family-wise error rate，也就是「這一組檢定裡至少誤判一個」的機率，不是每個檢定各自的誤判機率</li>
+<li>一關沒過就停。排在後面的 p 值就算本身也很小，也一律判為不顯著，不能跳過去繼續比</li>
+<li>校正後不顯著，不代表兩個模型在那一類沒有差異，只代表證據不夠在多重比較下下結論</li>
+</ul>
+
+<section class="terms">
+<h2>相關名詞</h2>
+<ul>
+<li><a href="delong-test.html">DeLong 檢定</a></li>
+<li><a href="auroc.html">AUROC</a></li>
+</ul>
+</section>
+
+<footer class="source">出處：Holm（1979）</footer>
+
+</main>
+</div>
+</body>
+</html>
