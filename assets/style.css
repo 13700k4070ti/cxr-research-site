@@ -174,7 +174,7 @@ table {
   font-family: var(--sans);
   font-size: 0.88rem;
   line-height: 1.55;
-  min-width: 100%;
+  width: 100%;
   background: #fff;
 }
 th, td { padding: 0.5rem 0.75rem; border: 1px solid var(--rule); text-align: left; vertical-align: top; }
