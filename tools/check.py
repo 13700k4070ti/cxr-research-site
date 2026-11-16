@@ -42,6 +42,10 @@ REQUIRED = {
 # AGENTS.md 7.1：大陸用語
 BANNED_TERMS = ["數據", "質量", "默認", "優化", "信息", "文檔", "視頻", "分辨率", "運行",
                 "軟件", "硬件", "網絡", "屏幕", "鏈接"]
+# AGENTS.md 7.2：專有名詞用英文，不要用中文譯名
+BANNED_TRANSLATIONS = ["拔靴法", "自助法", "約登指數", "批次正規化", "梯度累積", "資料增強", "最佳化器",
+                       "損失函數", "提早停止", "資料集轉移", "混合精度", "梯度加權類別活化圖", "二元交叉熵",
+                       "學習率", "特徵圖", "自然語言處理"]
 # AGENTS.md 7.3：空泛語句
 BANNED_PHRASES = ["值得注意的是", "總而言之", "讓我們", "深入探討", "至關重要", "賦能"]
 # 常見的簡體字（只收繁體中不會出現的字）
@@ -206,6 +210,9 @@ def main():
         for term in BANNED_TERMS:
             if term in text:
                 err(f, f"出現大陸用語「{term}」（見 AGENTS.md 7.1）")
+        for term in BANNED_TRANSLATIONS:
+            if term in text:
+                err(f, f"出現中文譯名「{term}」，專有名詞請用英文（見 AGENTS.md 7.2）")
         for phrase in BANNED_PHRASES:
             if phrase in text:
                 err(f, f"出現禁用語「{phrase}」（見 AGENTS.md 7.3）")

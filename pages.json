@@ -2,21 +2,21 @@
   { "id": "home", "type": "home", "title": "首頁", "file": "index.html", "summary": "研究問題與全站目錄", "order": 0 },
 
   { "id": "datasets", "type": "method", "title": "資料集與切分", "file": "methods/datasets.html", "summary": "NIH 訓練、CheXpert 外部測試，依病人切分", "order": 10 },
-  { "id": "preprocessing", "type": "method", "title": "影像前處理與資料增強", "file": "methods/preprocessing.html", "summary": "384×384 灰階，不做左右翻轉", "order": 20 },
+  { "id": "preprocessing", "type": "method", "title": "影像前處理與 data augmentation", "file": "methods/preprocessing.html", "summary": "384×384 灰階，不做左右翻轉", "order": 20 },
   { "id": "models", "type": "method", "title": "模型與 2×2 實驗設計", "file": "methods/models.html", "summary": "架構 × 預訓練資料，拆開兩個因素", "order": 30 },
   { "id": "training", "type": "method", "title": "訓練設定", "file": "methods/training.html", "summary": "D 設定怎麼選出來，所有模型共用", "order": 40 },
   { "id": "evaluation", "type": "method", "title": "評估指標與統計方法", "file": "methods/evaluation.html", "summary": "平均 AUROC、病人層級 bootstrap、DeLong", "order": 50 },
   { "id": "robustness-design", "type": "method", "title": "穩健性分析設計", "file": "methods/robustness-design.html", "summary": "長寬比、影像品質、AdaBN、Grad-CAM", "order": 60 },
 
   { "id": "auroc", "type": "glossary", "title": "AUROC", "subtitle": "ROC 曲線下面積", "file": "glossary/auroc.html", "summary": "研究的主要指標，衡量模型排序病例的能力", "order": 10 },
-  { "id": "bootstrap", "type": "glossary", "title": "bootstrap", "subtitle": "拔靴法", "file": "glossary/bootstrap.html", "summary": "有放回重抽，估計信賴區間", "order": 20 },
+  { "id": "bootstrap", "type": "glossary", "title": "bootstrap", "subtitle": "有放回重抽樣", "file": "glossary/bootstrap.html", "summary": "有放回重抽，估計信賴區間", "order": 20 },
   { "id": "delong-test", "type": "glossary", "title": "DeLong 檢定", "subtitle": "比較兩條 ROC 曲線", "file": "glossary/delong-test.html", "summary": "同一批病例上，兩個 AUROC 的差異檢定", "order": 30 },
-  { "id": "youden-j", "type": "glossary", "title": "Youden's J", "subtitle": "約登指數", "file": "glossary/youden-j.html", "summary": "敏感度 + 特異度 − 1，用來挑閾值", "order": 40 },
-  { "id": "domain-shift", "type": "glossary", "title": "資料集轉移", "subtitle": "domain shift", "file": "glossary/domain-shift.html", "summary": "換醫院後資料分布改變，模型表現跟著變", "order": 50 },
-  { "id": "batchnorm", "type": "glossary", "title": "BatchNorm", "subtitle": "批次正規化", "file": "glossary/batchnorm.html", "summary": "依批次統計量正規化，推論時用訓練集統計量", "order": 60 },
-  { "id": "adabn", "type": "glossary", "title": "AdaBN", "subtitle": "適應性批次正規化", "file": "glossary/adabn.html", "summary": "只用目標資料重新估計 BatchNorm 統計量", "order": 70 },
-  { "id": "gradient-accumulation", "type": "glossary", "title": "梯度累積", "subtitle": "gradient accumulation", "file": "glossary/gradient-accumulation.html", "summary": "VRAM 不夠時，用小 batch 湊出大 batch", "order": 80 },
-  { "id": "grad-cam", "type": "glossary", "title": "Grad-CAM", "subtitle": "梯度加權類別活化圖", "file": "glossary/grad-cam.html", "summary": "用熱圖看模型判斷時在看哪裡", "order": 90 },
+  { "id": "youden-j", "type": "glossary", "title": "Youden's J", "subtitle": "挑閾值用的指標", "file": "glossary/youden-j.html", "summary": "敏感度 + 特異度 − 1，用來挑閾值", "order": 40 },
+  { "id": "domain-shift", "type": "glossary", "title": "domain shift", "subtitle": "訓練與測試資料分布不同", "file": "glossary/domain-shift.html", "summary": "換醫院後資料分布改變，模型表現跟著變", "order": 50 },
+  { "id": "batchnorm", "type": "glossary", "title": "BatchNorm", "subtitle": "Batch Normalization", "file": "glossary/batchnorm.html", "summary": "依批次統計量正規化，推論時用訓練集統計量", "order": 60 },
+  { "id": "adabn", "type": "glossary", "title": "AdaBN", "subtitle": "Adaptive Batch Normalization", "file": "glossary/adabn.html", "summary": "只用目標資料重新估計 BatchNorm 統計量", "order": 70 },
+  { "id": "gradient-accumulation", "type": "glossary", "title": "gradient accumulation", "subtitle": "用小 batch 湊出大 batch", "file": "glossary/gradient-accumulation.html", "summary": "VRAM 不夠時，用小 batch 湊出大 batch", "order": 80 },
+  { "id": "grad-cam", "type": "glossary", "title": "Grad-CAM", "subtitle": "Gradient-weighted CAM", "file": "glossary/grad-cam.html", "summary": "用熱圖看模型判斷時在看哪裡", "order": 90 },
 
   { "id": "results", "type": "results", "title": "研究結果（待公開）", "file": "results/index.html", "summary": "結果目前尚未公開", "order": 10 }
 ]

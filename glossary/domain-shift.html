@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="page-id" content="domain-shift">
-<title>資料集轉移｜CXR 跨資料集泛化研究筆記</title>
+<title>domain shift｜CXR 跨資料集泛化研究筆記</title>
 <link rel="stylesheet" href="../assets/style.css">
 <script src="../assets/site.js" defer></script>
 </head>
@@ -13,7 +13,7 @@
 <nav class="sidebar" id="site-nav"></nav>
 <main class="page">
 
-<h1>資料集轉移<span class="zh">domain shift／dataset shift</span></h1>
+<h1>domain shift<span class="zh">也叫 dataset shift，訓練資料和測試資料的分布不同</span></h1>
 <p class="definition">測試資料和訓練資料來自不同分布，使模型在新資料上的表現改變。</p>
 
 <h2>白話解釋</h2>
@@ -26,13 +26,13 @@
 <p>任何一種不同，都可能讓模型在新醫院表現變差。更麻煩的是，模型可能學到的是「這家醫院的特徵」而不是疾病本身，例如影像角落的標記文字。</p>
 
 <h2>在這個研究裡</h2>
-<p>整個研究就是在量資料集轉移的影響：用 NIH 訓練，到 CheXpert 測試，比較不同架構受影響的程度，再用長寬比、影像品質、AdaBN 三個分析，試著拆出落差可能的來源。</p>
+<p>整個研究就是在量 domain shift 的影響：用 NIH 訓練，到 CheXpert 測試，比較不同架構受影響的程度，再用長寬比、影像品質、AdaBN 三個分析，試著拆出落差可能的來源。</p>
 
 <h2>容易搞錯的地方</h2>
 <ul>
 <li>內部測試分數高，不代表換資料集也高；排名也可能改變</li>
 <li>外部測試的落差通常同時混了影像、病人、標註三種差異，很難完全分開</li>
-<li>資料集轉移不只發生在換醫院，同一家醫院換了機器或改了流程也會發生</li>
+<li>domain shift 不只發生在換醫院，同一家醫院換了機器或改了流程也會發生</li>
 </ul>
 
 <section class="terms">

@@ -13,7 +13,7 @@
 <nav class="sidebar" id="site-nav"></nav>
 <main class="page">
 
-<h1>BatchNorm<span class="zh">批次正規化（Batch Normalization）</span></h1>
+<h1>BatchNorm<span class="zh">Batch Normalization，依批次統計量正規化每一層的輸出</span></h1>
 <p class="definition">把每一層的輸出依當批資料的平均和標準差正規化，讓訓練更穩定。</p>
 
 <h2>白話解釋</h2>
@@ -27,7 +27,7 @@
 <h2>容易搞錯的地方</h2>
 <ul>
 <li>推論時用的是訓練集的 running 統計量，不是測試資料自己的，所以換資料集時可能不適用</li>
-<li>batch 太小時，訓練時估計的平均和變異數很不穩定。梯度累積只能湊出有效 batch，BatchNorm 看到的仍是每次的小 batch</li>
+<li>batch 太小時，訓練時估計的平均和變異數很不穩定。gradient accumulation 只能湊出有效 batch，BatchNorm 看到的仍是每次的小 batch</li>
 <li>有 BatchNorm 的模型在推論前要切成 eval 模式，否則會用測試資料的統計量，結果不同</li>
 </ul>
 
@@ -35,8 +35,8 @@
 <h2>相關名詞</h2>
 <ul>
 <li><a href="adabn.html">AdaBN</a></li>
-<li><a href="gradient-accumulation.html">梯度累積</a></li>
-<li><a href="domain-shift.html">資料集轉移</a></li>
+<li><a href="gradient-accumulation.html">gradient accumulation</a></li>
+<li><a href="domain-shift.html">domain shift</a></li>
 </ul>
 </section>
 

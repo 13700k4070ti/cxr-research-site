@@ -87,7 +87,7 @@ cxr-research-site/
 
 | 區塊 | 寫法 |
 |---|---|
-| `<h1>` | 名詞本身（英文或中文，依第 7 節），後面接 `<span class="zh">中文說明</span>` |
+| `<h1>` | 名詞本身（依第 7.2 節，專有名詞用英文），後面接 `<span class="zh">中文說明</span>`；說明它在做什麼，不寫中文譯名 |
 | `<p class="definition">` | 一句話定義，40 字以內 |
 | `<h2>白話解釋</h2>` | 用高中生聽得懂的話說明，可以用比喻；有公式時先講直覺再放公式 |
 | `<h2>在這個研究裡</h2>` | 這個名詞在研究的哪個步驟用到、用來做什麼。只寫用途，不寫結果 |
@@ -134,7 +134,7 @@ cxr-research-site/
 ## 6. 命名規則
 
 - 檔名一律小寫英文，單字用 `-` 連接（kebab-case），例如 `delong-test.html`、`gradient-accumulation.html`
-- 名詞頁用名詞的英文名稱；本身是中文概念的，用通用的英文譯名（「資料集轉移」→ `domain-shift.html`）
+- 名詞頁用名詞的英文名稱（`domain shift` → `domain-shift.html`）；本身是中文概念的，用通用的英文說法（「不確定標籤」→ `uncertainty-labels.html`）
 - 方法頁用主題的英文短名（`datasets.html`、`robustness-design.html`）
 - `id` = 檔名去掉 `.html`，全站不可重複；資料夾裡的 `index.html`（例如 `results/index.html`）`id` 用資料夾名稱（`results`），首頁的 `id` 是 `home`
 - 不要用日期、編號或空格當檔名
@@ -163,16 +163,22 @@ cxr-research-site/
 | 屏幕 | 螢幕 |
 | 鏈接 | 連結 |
 
-### 7.2 保留英文的名詞
+### 7.2 專有名詞用英文
 
-下列名詞直接用英文，硬翻成中文反而看不懂：
+台灣上課、寫報告、跟同學討論時，這些名詞大多直接講英文，中文譯名反而少人用、讀起來卡。所以**專有名詞一律寫英文**，不要自己翻成中文，也不要在括號裡補中文譯名。
 
-- 指標與統計：AUROC、ROC、bootstrap、DeLong、p 值、Youden's J、Holm
-- 訓練相關：batch、epoch、seed、learning rate 可寫「學習率」、dropout、weight decay、AMP、VRAM、GPU
-- 模型與層：CNN、Transformer、BatchNorm、LayerNorm、AdaBN、Grad-CAM、EfficientNet-B0、ResNet-50、ConvNeXt-T、Swin-T、ViT、DINOv2、timm
-- 資料集：NIH ChestX-ray14、CheXpert、ImageNet-1k、ImageNet-22k
+- 指標與統計：AUROC、ROC、bootstrap、DeLong、p 值、Youden's J、Holm、95% CI
+- 訓練相關：batch、epoch、seed、learning rate、learning rate scheduler、optimizer、loss function、binary cross-entropy、dropout、weight decay、early stopping、warmup、gradient accumulation、AMP（mixed precision）、data augmentation、VRAM、GPU
+- 模型與層：CNN、Transformer、BatchNorm、LayerNorm、AdaBN、Grad-CAM、feature map、stochastic depth、EfficientNet-B0、ResNet-50、ConvNeXt-T、Swin-T、ViT、DINOv2、timm
+- 資料與概念：domain shift、NLP、NIH ChestX-ray14、CheXpert、ImageNet-1k、ImageNet-22k
 
-其他名詞用中文，第一次出現時括號附英文，例如「資料增強（data augmentation）」。
+下列中文譯名禁止使用，`check.py` 會檢查：拔靴法、自助法、約登指數、批次正規化、梯度累積、資料增強、最佳化器、損失函數、提早停止、資料集轉移、混合精度、梯度加權類別活化圖、二元交叉熵、學習率、特徵圖、自然語言處理。
+
+可以用中文的：一般用語和臨床用語，例如資料集、模型、預訓練、微調、閾值、信賴區間、敏感度、特異度、偽陽性、正規化層、熱圖。這些在台灣的課本和醫學文獻裡本來就用中文。
+
+不在上面清單的新名詞：台灣大多講英文的就用英文；拿不準的，寫英文並把它加到這份清單。
+
+名詞頁的 `<span class="zh">` 寫的是**中文說明**（這個名詞在做什麼），不是中文譯名。例如 bootstrap 寫「有放回重抽樣，估計結果有多不確定」，不要寫「拔靴法」。
 
 ### 7.3 語氣
 
@@ -238,7 +244,7 @@ cxr-research-site/
 
 - `holm-correction`：Holm 多重比較校正
 - `stochastic-depth`：stochastic depth
-- `mixed-precision`：AMP 混合精度訓練
+- `mixed-precision`：AMP（mixed precision）
 - `layernorm`：LayerNorm（和 BatchNorm 對照）
 - `uncertainty-labels`：CheXpert 的不確定標籤與 U-Zeros／U-Ones
 

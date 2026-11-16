@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="page-id" content="gradient-accumulation">
-<title>梯度累積｜CXR 跨資料集泛化研究筆記</title>
+<title>gradient accumulation｜CXR 跨資料集泛化研究筆記</title>
 <link rel="stylesheet" href="../assets/style.css">
 <script src="../assets/site.js" defer></script>
 </head>
@@ -13,12 +13,12 @@
 <nav class="sidebar" id="site-nav"></nav>
 <main class="page">
 
-<h1>梯度累積<span class="zh">gradient accumulation</span></h1>
+<h1>gradient accumulation<span class="zh">VRAM 不夠時，用小 batch 湊出大 batch</span></h1>
 <p class="definition">把好幾個小 batch 的梯度加起來再更新一次權重，在 VRAM 不夠時模擬大 batch。</p>
 
 <h2>白話解釋</h2>
 <p>一次丟進 GPU 的影像越多（batch 越大），需要的 VRAM 越多。384×384 的影像加上 Transformer，一張 12GB 的顯示卡可能一次只放得下 16 張。</p>
-<p>梯度累積的做法：每次只算 16 張的梯度，但先不更新權重，把梯度加起來；累積 4 次（共 64 張）之後才更新一次。就權重更新來說，效果接近一次用 64 張。</p>
+<p>gradient accumulation 的做法：每次只算 16 張的梯度，但先不更新權重，把梯度加起來；累積 4 次（共 64 張）之後才更新一次。就權重更新來說，效果接近一次用 64 張。</p>
 <div class="formula">有效 batch = 每次的小 batch × 累積次數</div>
 
 <h2>在這個研究裡</h2>
@@ -27,7 +27,7 @@
 <h2>容易搞錯的地方</h2>
 <ul>
 <li>每次的 loss 要除以累積次數，否則梯度會變成好幾倍大</li>
-<li>BatchNorm 看到的仍然是每次的小 batch，梯度累積無法讓 BatchNorm 的統計量也變成大 batch</li>
+<li>BatchNorm 看到的仍然是每次的小 batch，gradient accumulation 無法讓 BatchNorm 的統計量也變成大 batch</li>
 <li>訓練時間不會變短，只是讓大 batch 在小顯示卡上可行</li>
 </ul>
 

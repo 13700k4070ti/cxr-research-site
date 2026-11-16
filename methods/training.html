@@ -39,13 +39,13 @@
 <table>
 <thead><tr><th>項目</th><th>設定</th></tr></thead>
 <tbody>
-<tr><td>損失函數</td><td>二元交叉熵（BCEWithLogits），14 類各自獨立</td></tr>
-<tr><td>最佳化器</td><td>AdamW，weight decay 1e-2</td></tr>
+<tr><td>loss function</td><td>binary cross-entropy（BCEWithLogits），14 類各自獨立</td></tr>
+<tr><td>optimizer</td><td>AdamW，weight decay 1e-2</td></tr>
 <tr><td>dropout</td><td>最後一層前 0.3</td></tr>
-<tr><td>學習率排程</td><td>cosine，最多 30 個 epoch</td></tr>
-<tr><td>提早停止</td><td>NIH val 平均 AUROC 連續 5 個 epoch 沒有進步就停</td></tr>
+<tr><td>learning rate scheduler</td><td>cosine，最多 30 個 epoch</td></tr>
+<tr><td>early stopping</td><td>NIH val 平均 AUROC 連續 5 個 epoch 沒有進步就停</td></tr>
 <tr><td>有效 batch</td><td>固定 64</td></tr>
-<tr><td>精度</td><td>混合精度（AMP）</td></tr>
+<tr><td>精度</td><td>AMP（mixed precision）</td></tr>
 <tr><td>seed</td><td>每個模型用 seed 42 與 seed 1 各訓練一次</td></tr>
 </tbody>
 </table>
@@ -56,7 +56,7 @@
 <h2>各模型的 learning rate 與 batch</h2>
 <div class="table-wrap">
 <table>
-<thead><tr><th>模型</th><th>learning rate</th><th>實際 batch × 梯度累積</th></tr></thead>
+<thead><tr><th>模型</th><th>learning rate</th><th>實際 batch × gradient accumulation</th></tr></thead>
 <tbody>
 <tr><td>EfficientNet-B0</td><td>1e-4</td><td>64 × 1</td></tr>
 <tr><td>ResNet-50</td><td>3e-4</td><td>32 × 2</td></tr>
@@ -65,7 +65,7 @@
 </tbody>
 </table>
 </div>
-<p>ResNet-50 的 learning rate 是在 NIH val 上比較 3e-5、1e-4、3e-4 三組後選出的；其他模型只用 1e-4。硬體是 RTX 4070 Ti（12GB VRAM），大模型放不下 64 張一批，所以用梯度累積湊出相同的有效 batch。</p>
+<p>ResNet-50 的 learning rate 是在 NIH val 上比較 3e-5、1e-4、3e-4 三組後選出的；其他模型只用 1e-4。硬體是 RTX 4070 Ti（12GB VRAM），大模型放不下 64 張一批，所以用gradient accumulation湊出相同的有效 batch。</p>
 </section>
 
 <section>
@@ -78,13 +78,13 @@
 <p><strong>只用驗證集做選擇</strong>：最佳權重、learning rate、設定都只看 NIH val。NIH test 和 CheXpert 不參與任何選擇，否則測試分數會被「挑過」，變得太樂觀。</p>
 <p><strong>所有模型共用一套設定</strong>：比較架構時，條件要一樣。代價是這套設定是用 B0 選的，對其他模型不一定最好，這點列在研究限制裡。</p>
 <p><strong>每個模型兩個 seed</strong>：同一個設定換 seed，結果也會有些微差異。兩個 seed 可以做集成，也可以看兩次的方向是否一致。</p>
-<p><strong>固定有效 batch</strong>：batch 大小會影響訓練結果。用梯度累積讓每個模型的有效 batch 都是 64，避免顯示卡大小變成干擾因素。</p>
+<p><strong>固定有效 batch</strong>：batch 大小會影響訓練結果。用gradient accumulation讓每個模型的有效 batch 都是 64，避免顯示卡大小變成干擾因素。</p>
 </section>
 
 <section class="terms">
 <h2>相關名詞</h2>
 <ul>
-<li><a href="../glossary/gradient-accumulation.html">梯度累積</a></li>
+<li><a href="../glossary/gradient-accumulation.html">gradient accumulation</a></li>
 <li><a href="../glossary/auroc.html">AUROC</a></li>
 </ul>
 </section>

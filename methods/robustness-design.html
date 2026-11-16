@@ -43,7 +43,7 @@
 
 <section>
 <h2>Grad-CAM 挑哪些影像</h2>
-<p>熱圖是對 Cardiomegaly 的 logit 求最後一層特徵圖（12×12）的梯度，兩個 seed 各自正規化後取平均。觀察兩組影像：一組是三個模型都判斷為陽性的真陽性，從符合條件的影像中隨機抽 5 張；另一組是三個模型百分位排名差距最大的 5 張。</p>
+<p>熱圖是對 Cardiomegaly 的 logit 求最後一層 feature map（12×12）的梯度，兩個 seed 各自正規化後取平均。觀察兩組影像：一組是三個模型都判斷為陽性的真陽性，從符合條件的影像中隨機抽 5 張；另一組是三個模型百分位排名差距最大的 5 張。</p>
 <p>依「排名差距最大」挑出來的影像，本身就偏向某個模型出錯的病例，有挑選偏差，所以 Grad-CAM 只當質性觀察。熱圖疊在 CheXpert 影像上，依資料使用協議不能公開，網站上不會放。</p>
 </section>
 
@@ -60,7 +60,7 @@
 <li><a href="../glossary/adabn.html">AdaBN</a></li>
 <li><a href="../glossary/batchnorm.html">BatchNorm</a></li>
 <li><a href="../glossary/grad-cam.html">Grad-CAM</a></li>
-<li><a href="../glossary/domain-shift.html">資料集轉移</a></li>
+<li><a href="../glossary/domain-shift.html">domain shift</a></li>
 </ul>
 </section>
 
